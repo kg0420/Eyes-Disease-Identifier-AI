@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>👁️ Eye Disease Identification AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    body {
+      background: radial-gradient(circle at top, #0f172a, #020617);
+      color: #e2e8f0;
+    }
+    .card {
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 10px 25px rgba(30,136,229,0.15);
+    }
+    #loadingOverlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2,6,23,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+    }
+    .spinner {
+      width: 60px;
+      height: 60px;
+      border: 6px solid #1e88e5;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen flex flex-col items-center p-4">
+
+<!-- Loader -->
+<div id="loadingOverlay">
+  <div class="flex flex-col items-center">
+    <div class="spinner mb-4"></div>
+    <p class="text-blue-400 animate-pulse font-semibold">Analyzing medical image...</p>
+  </div>
+</div>
+
+<header class="mb-8 text-center">
+  <h1 class="text-3xl md:text-4xl font-bold text-blue-400">
+    👁️ Eye Disease Identification
+  </h1>
+  <p class="text-slate-400 mt-2">AI-powered medical diagnosis dashboard</p>
+</header>
+
+<main class="w-full max-w-5xl grid md:grid-cols-2 gap-8">
+
+  <!-- Upload -->
+  <section class="card rounded-2xl p-6">
+    <h2 class="text-lg font-semibold text-blue-300 mb-3">Upload Retinal Image</h2>
+
+    <div id="dropZone"
+         class="w-full p-6 border-2 border-dashed border-blue-500 rounded-lg text-center cursor-pointer hover:bg-slate-900 transition">
+      <p class="text-slate-300">Drag & drop image here or click to browse</p>
+      <input type="file" id="fileInput" class="hidden" accept="image/*">
+    </div>
+
+    <img id="previewImg"
+         class="mt-4 hidden rounded-lg border border-blue-500 max-h-56 object-contain">
+
+    <button id="analyzeBtn"
+            class="mt-4 w-full py-2 rounded-lg bg-blue-500 hover:bg-blue-400 text-black font-semibold">
+      Analyze Image
+    </button>
+  </section>
+
+  <!-- Results -->
+  <section class="card rounded-2xl p-6">
+    <h2 class="text-lg font-semibold text-blue-300 mb-3">Diagnosis Result</h2>
+
+    <div id="resultSection" class="hidden space-y-3">
+
+      <div class="flex flex-wrap gap-3">
+        <span id="resultLabel"
+              class="px-4 py-2 rounded-full bg-blue-500/20 text-blue-300 font-semibold"></span>
+        <span id="resultConfidence"
+              class="px-4 py-2 rounded-full bg-green-500/20 text-green-300 font-semibold"></span>
+      </div>
+
+      <div>
+        <p class="text-slate-400 mb-2">Prediction Probabilities</p>
+        <div id="probBars" class="space-y-2"></div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4 mt-4">
+        <div>
+          <p class="text-sm text-slate-400 mb-1">Original Scan</p>
+          <img id="originalImg" class="rounded-lg border border-slate-700">
+        </div>
+
+        <div>
+          <p class="text-sm text-slate-400 mb-1">AI Attention Map</p>
+          <img id="gradcamImg" class="rounded-lg border border-slate-700">
+        </div>
+      </div>
+    </div>
+
+    <p id="noResultText" class="text-slate-400">
+      No diagnosis yet.
+    </p>
+  </section>
+</main>
+
+<!-- Disease Info -->
+<section class="mt-12 w-full max-w-5xl">
+  <h2 class="text-2xl font-bold text-blue-400 mb-6 text-center">
+    🩺 Eye Disease Information
+  </h2>
+
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+    <div class="card rounded-xl p-5">
+      <h3 class="text-lg font-semibold text-blue-300">Cataract</h3>
+      <p class="text-sm text-slate-300 mt-2">
+        Clouding of the eye lens causing blurry or dim vision.
+      </p>
+      <ul class="text-xs text-slate-400 mt-3 space-y-1">
+        <li>• Blurred vision</li>
+        <li>• Light sensitivity</li>
+        <li>• Night vision issues</li>
+      </ul>
+    </div>
+
+    <div class="card rounded-xl p-5">
+      <h3 class="text-lg font-semibold text-blue-300">Diabetic Retinopathy</h3>
+      <p class="text-sm text-slate-300 mt-2">
+        Damage to retinal blood vessels due to diabetes.
+      </p>
+      <ul class="text-xs text-slate-400 mt-3 space-y-1">
+        <li>• Floaters</li>
+        <li>• Dark spots</li>
+        <li>• Vision loss</li>
+      </ul>
+    </div>
+
+    <div class="card rounded-xl p-5">
+      <h3 class="text-lg font-semibold text-blue-300">Glaucoma</h3>
+      <p class="text-sm text-slate-300 mt-2">
+        Optic nerve damage due to increased eye pressure.
+      </p>
+      <ul class="text-xs text-slate-400 mt-3 space-y-1">
+        <li>• Tunnel vision</li>
+        <li>• Headaches</li>
+        <li>• Eye pain</li>
+      </ul>
+    </div>
+
+    <div class="card rounded-xl p-5">
+      <h3 class="text-lg font-semibold text-blue-300">Normal</h3>
+      <p class="text-sm text-slate-300 mt-2">
+        Healthy retina, lens, and optic nerve.
+      </p>
+      <ul class="text-xs text-slate-400 mt-3 space-y-1">
+        <li>• Clear vision</li>
+        <li>• No pain</li>
+        <li>• Normal pressure</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<h1 class="animate-pulse text-center mt-4">
+  <span class="font-bold text-red-400">Disclaimer:</span>
+  This AI model is in a learning phase and may produce incorrect results.
+</h1>
+
+<footer class="mt-10 text-xs text-slate-500">
+  Developed by <span class="text-blue-400 font-semibold">Krish Gupta</span>
+</footer>
